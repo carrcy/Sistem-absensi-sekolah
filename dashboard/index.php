@@ -34,7 +34,7 @@ $total_jadwal = mysqli_fetch_array($jadwal)[0];
 
   .card-statistic-1 {
     padding: 10px;
-    border-radius: 15px; 
+    border-radius: 15px;
   }
 
   .card-icon {
@@ -50,17 +50,18 @@ $total_jadwal = mysqli_fetch_array($jadwal)[0];
 </style>
 
 <section class="section">
-  <div class="section-header bg-no">
+  <div class="section-header ">
     <h1 class="m-auto">Dashboard</h1>
   </div>
-  <div class="row">
+  <div class="row  p-5 pt-3">
     <!-- Baris pertama -->
     <div class="col-lg-6 col-md-6 col-sm-12 col-12 ">
       <div class="card card-statistic-1 ">
         <div class="card-icon bg-primary ">
+          <i class='far fa-user' style="font-size: 40px; color: hitam;"></i>
           <i class="far fa-user"></i>
         </div>
-        <div class="card-wrap">
+        <div class="card-wrap ">
           <div class="card-header">
             <h4>Total Siswa</h4> 
           </div>
@@ -74,9 +75,10 @@ $total_jadwal = mysqli_fetch_array($jadwal)[0];
     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
       <div class="card card-statistic-1 ">
         <div class="card-icon bg-danger ">
+          <i class='far fa-user' style="font-size: 40px; color: hitam;"></i>
           <i class="far fa-user"></i>
         </div>
-        <div class="card-wrap">
+        <div class="card-wrap ">
           <div class="card-header">
             <h4>Total Guru</h4>
           </div>
@@ -91,9 +93,10 @@ $total_jadwal = mysqli_fetch_array($jadwal)[0];
     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
       <div class="card card-statistic-1 ">
         <div class="card-icon bg-warning ">
+          <i class='far fa-user' style="font-size: 40px; color: hitam;"></i>
           <i class="far fa-user"></i>
         </div>
-        <div class="card-wrap">
+        <div class="card-wrap ">
           <div class="card-header">
             <h4>Total Kelas</h4>
           </div>
@@ -107,9 +110,10 @@ $total_jadwal = mysqli_fetch_array($jadwal)[0];
     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
       <div class="card card-statistic-1 ">
         <div class="card-icon bg-success ">
+          <i class='far fa-user' style="font-size: 40px; color: hitam;"></i>
           <i class="far fa-user"></i>
         </div>
-        <div class="card-wrap">
+        <div class="card-wrap ">
           <div class="card-header">
             <h4>Total Jadwal</h4>
           </div>

@@ -7,19 +7,15 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Cek apakah pengguna sudah login
 if (!isset($_SESSION['login'])) {
     header("Location: ../login.php");
     exit;
 }
 
-// Ambil ID guru dari sesi
 $id_guru = $_SESSION['login']['id_guru'];
 
-// Ambil jadwal_id dari parameter GET
 $jadwal_id = isset($_GET['jadwal_id']) ? $_GET['jadwal_id'] : null;
 
-// Query untuk mendapatkan data kelas dari absensi berdasarkan jadwal_id
 $kelas_result = mysqli_query($connection, "
     SELECT k.id_kelas, k.nama_kelas 
     FROM jadwal j
@@ -27,7 +23,6 @@ $kelas_result = mysqli_query($connection, "
     WHERE j.id_jadwal = '$jadwal_id'
 ");
 
-// Periksa apakah ada kelas yang ditemukan
 if ($kelas = mysqli_fetch_assoc($kelas_result)) {
     $id_kelas = $kelas['id_kelas'];
     $nama_kelas = $kelas['nama_kelas'];
@@ -36,24 +31,54 @@ if ($kelas = mysqli_fetch_assoc($kelas_result)) {
     exit;
 }
 
-// Query untuk mendapatkan data siswa berdasarkan id_kelas
 $siswa_result = mysqli_query($connection, "SELECT id_siswa, nama FROM siswa WHERE kelas_id = '$id_kelas'");
 
-// Query untuk mendapatkan detail jadwal yang dipilih
 $jadwal_result = mysqli_query($connection, "
     SELECT j.hari, j.jam, j.mata_pelajaran 
     FROM jadwal j
     WHERE j.id_jadwal = '$jadwal_id'
 ");
 
-// Periksa apakah query berhasil dan memiliki hasil
 if ($jadwal_detail = mysqli_fetch_assoc($jadwal_result)) {
     $hari = $jadwal_detail['hari'];
 } else {
     echo "Tidak ada data jadwal ditemukan.";
     exit;
 }
+
+// Menampilkan pesan alert jika ada
+if (isset($_SESSION['info'])) {
+    $info = $_SESSION['info'];
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('alertMessage').innerText = '" . addslashes($info['message']) . "';
+                var alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+                alertModal.show();
+            });
+        </script>";
+    unset($_SESSION['info']); 
+}
+
+// Modal Alert HTML
 ?>
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alertModalLabel">Pesan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="alertMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
     input[type="radio"] {
@@ -141,40 +166,30 @@ if ($jadwal_detail = mysqli_fetch_assoc($jadwal_result)) {
                         </div>
                         <button type="submit" class="btn btn-primary end">Submit</button>
                     </form>
+
+                    <!-- alert -->
+                    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title text-success" id="alertModalLabel">Pemberitahuan</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="alertMessage"></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Tutup</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<?php
-if (isset($_SESSION['info'])) :
-    if ($_SESSION['info']['status'] == 'success') {
-        ?>
-        <script>
-            iziToast.success({
-                title: 'Sukses',
-                message: `<?= $_SESSION['info']['message'] ?>`,
-                position: 'topCenter',
-                timeout: 5000
-            });
-        </script>
-        <?php
-    } else {
-        ?>
-        <script>
-            iziToast.error({
-                title: 'Gagal',
-                message: `<?= $_SESSION['info']['message'] ?>`,
-                timeout: 5000,
-                position: 'topCenter'
-            });
-        </script>
-        <?php
-    }
-    unset($_SESSION['info']);
-endif;
-?>
 <?php
 require_once '../layout/_bottom.php';
 ?>

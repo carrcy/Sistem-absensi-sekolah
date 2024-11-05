@@ -31,6 +31,9 @@
 <script src="../assets/modules/jquery-ui/jquery-ui.min.js"></script>
 <script src="../assets/modules/izitoast/js/iziToast.min.js"></script>
 
+
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
 <!-- Template JS File -->
 <script src="../assets/js/scripts.js"></script>
 <script src="../assets/js/custom.js"></script>

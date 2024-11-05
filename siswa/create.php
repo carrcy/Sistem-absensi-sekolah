@@ -60,11 +60,6 @@ if (!$result) {
               </tr>
 
               <tr>
-                <td>ADMIN ID</td>
-                <td><input class="form-control" type="text" name="admin_id" size="20" required></td>
-              </tr>
-              
-              <tr>
                 <td>
                   <input class="btn btn-primary" type="submit" name="proses" value="Simpan">
                   <input class="btn btn-danger" type="reset" name="batal" value="Bersihkan">

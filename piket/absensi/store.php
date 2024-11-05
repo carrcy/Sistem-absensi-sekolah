@@ -57,7 +57,7 @@ foreach ($status_kehadiran as $siswa_id => $status) {
 }
 
 // Simpan laporan absensi setelah semua data absensi siswa tersimpan
-$query_laporan = "INSERT INTO laporan_absensi (absensi_id, total_hadir, total_tidak_hadir, total_izin, total_sakit, guru_id) VALUES (?, ?, ?, ?, ?, ?)";
+$query_laporan = "INSERT INTO laporan_absensi (total_hadir, total_tidak_hadir, total_izin, total_sakit, guru_id) VALUES (?, ?, ?, ?, ?)";
 $stmt_laporan = mysqli_prepare($connection, $query_laporan);
 
 // Cek apakah query laporan berhasil dipersiapkan
@@ -66,7 +66,7 @@ if (!$stmt_laporan) {
 }
 
 // Bind dan eksekusi query untuk menyimpan laporan
-mysqli_stmt_bind_param($stmt_laporan, 'iiiiii', $id_absensi, $total_hadir, $total_tidak_hadir, $total_izin, $total_sakit, $guru_id);
+mysqli_stmt_bind_param($stmt_laporan, 'iiiii', $total_hadir, $total_tidak_hadir, $total_izin, $total_sakit, $guru_id);
 $result_laporan = mysqli_stmt_execute($stmt_laporan);
 
 // Periksa apakah penyimpanan laporan berhasil
@@ -84,8 +84,7 @@ if ($result_laporan) {
     ];
 }
 
-
 // Redirect kembali ke halaman absensi
-header("Location: index.php");
+header("Location: index.php");  
 exit;
 ?>

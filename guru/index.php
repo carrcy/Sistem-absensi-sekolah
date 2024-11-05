@@ -64,7 +64,7 @@ $result = mysqli_query($connection, "SELECT * FROM guru");
 <?php
 require_once '../layout/_bottom.php';
 ?>
-<!-- Page Specific JS File -->
+  
 <?php
 if (isset($_SESSION['info'])) :
   if ($_SESSION['info']['status'] == 'success') {

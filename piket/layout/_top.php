@@ -25,6 +25,12 @@ isLogin();
   <link rel="stylesheet" href="../../assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="../../assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css">
   <link rel="stylesheet" href="../../assets/modules/izitoast/css/iziToast.min.css">
+  <link rel="stylesheet" href="../../assets/css/iziToast.min.css">
+<script src="../../assets/js/iziToast.min.js"></script>
+
+
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
   <!-- Template CSS -->
   <link rel="stylesheet" href="../../assets/css/style.css">

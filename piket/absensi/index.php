@@ -4,7 +4,7 @@ require_once '../helper/connection.php';
 
 // Pastikan sesi sudah dimulai
 if (session_status() === PHP_SESSION_NONE) {
-  session_start();
+    session_start();
 }
 
 // Cek apakah pengguna sudah login
@@ -45,93 +45,92 @@ uksort($jadwal_harian, function($a, $b) use ($urutan_hari) {
 ?>
 
 <section class="section">
-  <div class="section-header text-center">
-    <h1>ABSENSI SISWA BERDASARKAN JADWAL MENGAJAR</h1>
-  </div>
-  <div class="row">
-    <div class="col-12">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="table-1">
-              <thead class="bg-success text-white text-center">
-                <tr>
-                  <th style="width: 5%">No</th>
-                  <th style="width: 15%">Jam Ke</th>
-                  <th style="width: 20%">Kelas</th>
-                  <th style="width: 25%">Pelajaran</th>
-                  <th style="width: 25%">Nama Guru</th>
-                  <th style="width: 10%">Aksi</th> <!-- Tambahkan kolom aksi -->
-                </tr>
-              </thead>
-              <tbody>
-              <?php
-              if (count($jadwal_harian) > 0) {
-                $no = 1;
-                foreach ($jadwal_harian as $hari => $jadwals) {
-                  ?>
-                  <tr class="table bg-light fw-bold">
-                    <td colspan="6" class="text-uppercase"><?= $hari ?></td>
-                  </tr>
-                  <?php
-                  foreach ($jadwals as $jadwal) :
-                    ?>
-                    <tr class="text-center">
-                      <td><?= $no++ ?></td>
-                      <td><?= $jadwal['jam'] ?></td>
-                      <td><?= $jadwal['nama_kelas'] ?></td>
-                      <td><?= $jadwal['mata_pelajaran'] ?></td>
-                      <td><?= $jadwal['nama_guru'] ?></td>
-                      <td>
-                        <!-- Tombol Absen -->
-                        <a href="form.php?jadwal_id=<?= $jadwal['id_jadwal'] ?>" class="btn btn-primary btn-sm">Absen</a>
-                      </td>
-                    </tr>
-                  <?php
-                  endforeach;
-                }
-              } else {
-                echo "<tr><td colspan='6' class='text-center text-muted'>Tidak ada data absensi untuk guru ini.</td></tr>";
-              }
-              ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <div class="section-header text-center">
+        <h1>ABSENSI SISWA BERDASARKAN JADWAL MENGAJAR</h1>
     </div>
-  </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="table-1">
+                            <thead class="bg-success text-white text-center">
+                                <tr>
+                                    <th style="width: 5%">No</th>
+                                    <th style="width: 15%">Jam Ke</th>
+                                    <th style="width: 20%">Kelas</th>
+                                    <th style="width: 25%">Pelajaran</th>
+                                    <th style="width: 25%">Nama Guru</th>
+                                    <th style="width: 10%">Aksi</th> <!-- Tambahkan kolom aksi -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            if (count($jadwal_harian) > 0) {
+                                $no = 1;
+                                foreach ($jadwal_harian as $hari => $jadwals) {
+                                    ?>
+                                    <tr class="table bg-light fw-bold">
+                                        <td colspan="6" class="text-uppercase"><?= $hari ?></td>
+                                    </tr>
+                                    <?php
+                                    foreach ($jadwals as $jadwal) :
+                                        ?>
+                                        <tr class="text-center">
+                                            <td><?= $no++ ?></td>
+                                            <td><?= $jadwal['jam'] ?></td>
+                                            <td><?= $jadwal['nama_kelas'] ?></td>
+                                            <td><?= $jadwal['mata_pelajaran'] ?></td>
+                                            <td><?= $jadwal['nama_guru'] ?></td>
+                                            <td>
+                                                <!-- Tombol Absen -->
+                                                <a href="form.php?jadwal_id=<?= $jadwal['id_jadwal'] ?>" class="btn btn-primary btn-sm">Absen</a>
+                                            </td>
+                                        </tr>
+                                    <?php
+                                    endforeach;
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' class='text-center text-muted'>Tidak ada data absensi untuk guru ini.</td></tr>";
+                            }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- Page Specific JS File -->
 <?php
 if (isset($_SESSION['info'])) :
-  if ($_SESSION['info']['status'] == 'success') {
-    ?>
-    <script>
-      iziToast.success({
-        title: 'Sukses',
-        message: `<?= $_SESSION['info']['message'] ?>`,
-        position: 'topCenter',
-        timeout: 5000
-      });
-    </script>
-  <?php
-  } else {
-    ?>
-    <script>
-      iziToast.error({
-        title: 'Gagal',
-        message: `<?= $_SESSION['info']['message'] ?>`,
-        timeout: 5000,
-        position: 'topCenter'
-      });
-    </script>
-<?php
-  }
-  
-  unset($_SESSION['info']);
-  $_SESSION['info'] = null;
+    if ($_SESSION['info']['status'] == 'success') {
+        ?>
+        <script>
+            iziToast.success({
+                title: 'Sukses',
+                message: `<?= $_SESSION['info']['message'] ?>`,
+                position: 'topCenter',
+                timeout: 5000
+            });
+        </script>
+        <?php
+    } else {
+        ?>
+        <script>
+            iziToast.error({
+                title: 'Gagal',
+                message: `<?= $_SESSION['info']['message'] ?>`,
+                timeout: 5000,
+                position: 'topCenter'
+            });
+        </script>
+    <?php
+    }
+    
+    unset($_SESSION['info']);
 endif;
 ?>
 <?php

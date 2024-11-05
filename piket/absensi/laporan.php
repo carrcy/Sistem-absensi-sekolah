@@ -11,7 +11,7 @@ if (!isset($_SESSION['login'])) {
 // Ambil jadwal_id dari parameter GET
 $jadwal_id = isset($_GET['jadwal_id']) ? intval($_GET['jadwal_id']) : 0;
 
-// Query untuk mendapatkan semua nama siswa berdasarkan status kehadiran
+// Query untuk mendapatkan semua nama siswa berdasarkan status kehadiran, diurutkan berdasarkan id_siswa
 $result_absensi = mysqli_query($connection, "
     SELECT 
         a.tanggal, 
@@ -19,9 +19,9 @@ $result_absensi = mysqli_query($connection, "
         SUM(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN 1 ELSE 0 END) AS jumlah_tidak_hadir,
         SUM(CASE WHEN a.status_kehadiran = 'Izin' THEN 1 ELSE 0 END) AS jumlah_izin,
         SUM(CASE WHEN a.status_kehadiran = 'Sakit' THEN 1 ELSE 0 END) AS jumlah_sakit,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN s.nama END SEPARATOR ', ') AS siswa_tidak_hadir,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Izin' THEN s.nama END SEPARATOR ', ') AS siswa_izin,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Sakit' THEN s.nama END SEPARATOR ', ') AS siswa_sakit
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_tidak_hadir,
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Izin' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_izin,
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Sakit' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_sakit
     FROM absensi a
     JOIN siswa s ON a.siswa_id = s.id_siswa
     JOIN guru g ON a.guru_id = g.id_guru
@@ -42,7 +42,7 @@ if (!$result_absensi) {
     .table {
         border: 0.5px solid gray;
         border-collapse: collapse;
-        width: 100%; /* Mengatur lebar tabel menjadi 100% */
+        width: 100%;
     }
 
     .table th, .table td {
@@ -67,14 +67,14 @@ if (!$result_absensi) {
 
     @media (max-width: 768px) {
         .table th, .table td {
-            font-size: 14px; /* Mengurangi ukuran font pada perangkat kecil */
-            padding: 4px; /* Mengurangi padding pada perangkat kecil */
+            font-size: 14px;
+            padding: 4px;
         }
 
         .table {
-            display: block; /* Mengatur tabel untuk menjadi block */
-            overflow-x: auto; /* Menambahkan scroll horizontal */
-            white-space: nowrap; /* Mencegah wrapping pada sel tabel */
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
         }
     }
 </style>
@@ -87,9 +87,10 @@ if (!$result_absensi) {
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
+                    <a href="cetak_absensi.php?jadwal_id=<?= $jadwal_id ?>" target="_blank" class="btn btn-primary">Cetak PDF</a>
                     <br>
                     <br>
-                    <table class="table">
+                    <table class="table" id="table-1">
                         <thead class="text-center">
                         <tr>
                             <th style="width: 5%">No</th>
@@ -112,7 +113,7 @@ if (!$result_absensi) {
                                     <td class="text-center"><?= $absensi['jumlah_tidak_hadir'] ?></td>
                                     <td class="text-center"><?= $absensi['jumlah_izin'] ?></td>
                                     <td class="text-center"><?= $absensi['jumlah_sakit'] ?></td>
-                                    <td class=" p-2">
+                                    <td class="p-2">
                                         <?php 
                                         $list_html = '';
                                         if (!empty($absensi['siswa_tidak_hadir'])) {
@@ -153,3 +154,5 @@ if (!$result_absensi) {
 <?php
 require_once '../layout/_bottom.php';
 ?>
+
+<script src="../../assets/js/page/modules-datatables.js"></script>
