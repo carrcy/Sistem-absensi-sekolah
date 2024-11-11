@@ -1,4 +1,6 @@
 <?php
+require_once '../helper/auth.php';
+isLogin('guru');
 require_once '../layout/_top.php';
 require_once '../helper/connection.php';
 

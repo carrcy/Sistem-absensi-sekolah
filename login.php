@@ -19,22 +19,22 @@ if (isset($_POST['submit'])) {
     // Memeriksa password guru
     $guru = $guru_result->fetch_assoc();
     if ($password == $guru['password_guru']) {
-      $_SESSION['login'] = $guru;
-      $_SESSION['guru_id'] = $guru['id_guru'];
-      header("Location: piket/dashboard/index.php");
-      exit;
+        $_SESSION['login'] = $guru;
+        $_SESSION['guru_id'] = $guru['id_guru'];
+        header("Location: piket/dashboard/index.php");
+        exit;
     } else {
-      $error = "Password salah";
+        $error = "Password salah";
     }
   } elseif (mysqli_num_rows($admin_result) === 1) {
     // Memeriksa admin umum
     $admin = mysqli_fetch_assoc($admin_result);
     if ($password == $admin['password_admin']) {
-      $_SESSION['login'] = $admin;
-      header('Location: index.php');
-      exit;
+        $_SESSION['login'] = $admin;
+        header('Location: index.php');
+        exit;
     } else {
-      $error = "Password salah";
+        $error = "Password salah";
     }
   } else {
     $error = "Username atau password salah";

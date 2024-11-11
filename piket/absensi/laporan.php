@@ -1,12 +1,13 @@
 <?php
+
 require_once '../layout/_top.php';
 require_once '../helper/connection.php';
 
 // Cek apakah pengguna sudah login
-if (!isset($_SESSION['login'])) {
-    header("Location: ../login.php");
-    exit;
-}
+// if (!isset($_SESSION['login'])) {
+//     header("Location: ../../login.php");
+//     exit;
+// }
 
 // Ambil jadwal_id dari parameter GET
 $jadwal_id = isset($_GET['jadwal_id']) ? intval($_GET['jadwal_id']) : 0;
@@ -155,4 +156,4 @@ if (!$result_absensi) {
 require_once '../layout/_bottom.php';
 ?>
 
-<script src="../../assets/js/page/modules-datatables.js"></script>
+<script src="../assets/js/page/modules-datatables.js"></script>

@@ -41,11 +41,9 @@
           <span>Kelas</span></a>
           <ul class="dropdown-menu">
             <li><a class="nav-link " href="../Absensi">Absensi</a></li>
-            <!-- <li><a class="nav-link" href="../../Peminjam/index.php">List Peminjam</a></li> -->
           </ul>
           <ul class="dropdown-menu">
             <li><a class="nav-link " href="../jadwal">Jadwal</a></li>
-            <!-- <li><a class="nav-link" href="../../Peminjam/index.php">List Peminjam</a></li> -->
           </ul>
     </ul>
   </aside>

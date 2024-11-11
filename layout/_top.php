@@ -1,7 +1,7 @@
 <?php
 require_once '../helper/auth.php';
 
-isLogin();
+isLogin('admin');
 ?>
 
 <!DOCTYPE html>

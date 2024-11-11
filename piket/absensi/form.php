@@ -13,9 +13,9 @@ if (!isset($_SESSION['login'])) {
 }
 
 $id_guru = $_SESSION['login']['id_guru'];
-
 $jadwal_id = isset($_GET['jadwal_id']) ? $_GET['jadwal_id'] : null;
 
+// Ambil data kelas berdasarkan jadwal
 $kelas_result = mysqli_query($connection, "
     SELECT k.id_kelas, k.nama_kelas 
     FROM jadwal j
@@ -31,8 +31,10 @@ if ($kelas = mysqli_fetch_assoc($kelas_result)) {
     exit;
 }
 
+// Ambil data siswa berdasarkan kelas
 $siswa_result = mysqli_query($connection, "SELECT id_siswa, nama FROM siswa WHERE kelas_id = '$id_kelas'");
 
+// Ambil data jadwal
 $jadwal_result = mysqli_query($connection, "
     SELECT j.hari, j.jam, j.mata_pelajaran 
     FROM jadwal j
@@ -45,40 +47,36 @@ if ($jadwal_detail = mysqli_fetch_assoc($jadwal_result)) {
     echo "Tidak ada data jadwal ditemukan.";
     exit;
 }
-
-// Menampilkan pesan alert jika ada
-if (isset($_SESSION['info'])) {
-    $info = $_SESSION['info'];
-    echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('alertMessage').innerText = '" . addslashes($info['message']) . "';
-                var alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
-                alertModal.show();
-            });
-        </script>";
-    unset($_SESSION['info']); 
-}
-
-// Modal Alert HTML
 ?>
-<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="alertModalLabel">Pesan</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="alertMessage"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+
+<!-- Modal Alert -->
+<?php if (isset($_SESSION['info'])): ?>
+    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="alertModalLabel">Pesan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="alertMessage"><?= $_SESSION['info']['message']; ?></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            alertModal.show();
+        });
+    </script>
+    <?php unset($_SESSION['info']); ?>
+<?php endif; ?>
 
 <style>
     input[type="radio"] {
@@ -90,26 +88,24 @@ if (isset($_SESSION['info'])) {
     section {
         color: black;
     }
-
-    /* CSS untuk mengatur warna border tabel */
+    
     .table {
-        border: 0.5px solid gray; /* Mengatur ketebalan border */
-        border-collapse: collapse; /* Menghindari jarak antara border */
+        border: 0.5px solid gray; 
+        border-collapse: collapse;
     }
     .table th, .table td {
-        border: 0.5px solid gray; /* Mengatur ketebalan border pada sel */
-        padding: 8px; /* Menambah jarak dalam sel */
+        border: 0.5px solid gray;
+        padding: 8px; 
     }
     .table th {
-        background-color: #f2f2f2; /* Warna latar belakang untuk header tabel */
+        background-color: #f2f2f2; 
     }
 
     @media (max-width: 768px) {
-        /* Mengatur tampilan tabel pada layar kecil */
         .table {
             display: block;
-            overflow-x: auto; /* Menambahkan scroll horizontal */
-            white-space: nowrap; /* Mencegah teks dibungkus */
+            overflow-x: auto; 
+            white-space: nowrap; 
         }
     }
 </style>
@@ -158,32 +154,12 @@ if (isset($_SESSION['info'])) {
                                             <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Izin"></td>
                                             <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Sakit"></td>
                                         </tr>
-                                    <?php
-                                    endwhile;
-                                    ?>
+                                    <?php endwhile; ?>
                                 </tbody>
                             </table>
                         </div>
                         <button type="submit" class="btn btn-primary end">Submit</button>
                     </form>
-
-                    <!-- alert -->
-                    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title text-success" id="alertModalLabel">Pemberitahuan</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p id="alertMessage"></p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Tutup</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

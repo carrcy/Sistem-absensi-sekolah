@@ -1,7 +1,7 @@
 <?php
 require_once '../helper/auth.php';
 
-isLogin();
+isLogin('guru');
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +26,9 @@ isLogin();
   <link rel="stylesheet" href="../../assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css">
   <link rel="stylesheet" href="../../assets/modules/izitoast/css/iziToast.min.css">
   <link rel="stylesheet" href="../../assets/css/iziToast.min.css">
-<script src="../../assets/js/iziToast.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+
 
 
   <!-- font awesome -->
