@@ -1,6 +1,6 @@
 <?php
 require_once '../helper/connection.php';
-require_once '../../TCPDF/tcpdf.php'; // Pastikan path ini benar
+require_once '../TCPDF/tcpdf.php'; // Pastikan path ini benar
 
 // Ambil jadwal_id dari parameter GET
 $jadwal_id = isset($_GET['jadwal_id']) ? intval($_GET['jadwal_id']) : 0;
@@ -14,9 +14,9 @@ $result_absensi = mysqli_query($connection, "
         SUM(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN 1 ELSE 0 END) AS jumlah_tidak_hadir,
         SUM(CASE WHEN a.status_kehadiran = 'Izin' THEN 1 ELSE 0 END) AS jumlah_izin,
         SUM(CASE WHEN a.status_kehadiran = 'Sakit' THEN 1 ELSE 0 END) AS jumlah_sakit,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN CONCAT(s.id_siswa, ': ', s.nama) END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_tidak_hadir,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Izin' THEN CONCAT(s.id_siswa, ': ', s.nama) END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_izin,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Sakit' THEN CONCAT(s.id_siswa, ': ', s.nama) END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_sakit
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN CONCAT(s.nis, ': ', s.nama) END ORDER BY s.nis ASC SEPARATOR ', ') AS siswa_tidak_hadir,
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Izin' THEN CONCAT(s.nis, ': ', s.nama) END ORDER BY s.nis ASC SEPARATOR ', ') AS siswa_izin,
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Sakit' THEN CONCAT(s.nis, ': ', s.nama) END ORDER BY s.nis ASC SEPARATOR ', ') AS siswa_sakit
     FROM absensi a
     JOIN siswa s ON a.siswa_id = s.id_siswa
     JOIN guru g ON a.guru_id = g.id_guru
@@ -29,12 +29,18 @@ if (!$result_absensi) {
     die("Query Error: " . mysqli_error($connection));
 }
 
+// Ambil data pertama untuk header
+$first_row = mysqli_fetch_assoc($result_absensi);
+if (!$first_row) {
+    die("Tidak ada data absensi ditemukan.");
+}
+
 // Inisialisasi TCPDF
 $pdf = new TCPDF();
 $pdf->SetCreator(PDF_CREATOR);
 $pdf->SetAuthor('Sistem Absensi');
 $pdf->SetTitle('Laporan Absensi Siswa');
-$pdf->SetHeaderData('', 0, 'Laporan Absensi Siswa', "Mata Pelajaran: " . htmlspecialchars($result_absensi->fetch_assoc()['mata_pelajaran']));
+$pdf->SetHeaderData('', 0, 'Laporan Absensi Siswa', "Mata Pelajaran: " . htmlspecialchars($first_row['mata_pelajaran']));
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 $pdf->SetMargins(10, 20, 10);
@@ -74,35 +80,32 @@ while ($absensi = mysqli_fetch_assoc($result_absensi)) {
     $siswa_izin_list = !empty($absensi['siswa_izin']) ? explode(', ', $absensi['siswa_izin']) : [];
     $siswa_sakit_list = !empty($absensi['siswa_sakit']) ? explode(', ', $absensi['siswa_sakit']) : [];
 
-    // Menyiapkan konten sub-tabel dengan nomor
+    // Menyiapkan konten sub-tabel dengan nama siswa di bawah kategori
     $siswa_nama_html = '<table cellpadding="3" border="0">';
     
     if (count($siswa_tidak_hadir_list) > 0) {
-        $siswa_nama_html .= '<tr><td><strong>Tidak Hadir:</strong></td><td>';
+        $siswa_nama_html .= '<tr><td><strong>Tidak Hadir:</strong></td></tr>';
         foreach ($siswa_tidak_hadir_list as $index => $siswa) {
-            $siswa_nama_html .= ($index + 1) . '. ' . htmlspecialchars($siswa) . '<br>';
+            $siswa_nama_html .= '<tr><td>' . ($index + 1) . '. ' . htmlspecialchars($siswa) . '</td></tr>';
         }
-        $siswa_nama_html .= '</td></tr>';
     } else {
         $siswa_nama_html .= '<tr><td><strong>Tidak Hadir:</strong></td><td>-</td></tr>';
     }
 
     if (count($siswa_izin_list) > 0) {
-        $siswa_nama_html .= '<tr><td><strong>Izin:</strong></td><td>';
+        $siswa_nama_html .= '<tr><td><strong>Izin:</strong></td></tr>';
         foreach ($siswa_izin_list as $index => $siswa) {
-            $siswa_nama_html .= ($index + 1) . '. ' . htmlspecialchars($siswa) . '<br>';
+            $siswa_nama_html .= '<tr><td>' . ($index + 1) . '. ' . htmlspecialchars($siswa) . '</td></tr>';
         }
-        $siswa_nama_html .= '</td></tr>';
     } else {
         $siswa_nama_html .= '<tr><td><strong>Izin:</strong></td><td>-</td></tr>';
     }
 
     if (count($siswa_sakit_list) > 0) {
-        $siswa_nama_html .= '<tr><td><strong>Sakit:</strong></td><td>';
+        $siswa_nama_html .= '<tr><td><strong>Sakit:</strong></td></tr>';
         foreach ($siswa_sakit_list as $index => $siswa) {
-            $siswa_nama_html .= ($index + 1) . '. ' . htmlspecialchars($siswa) . '<br>';
+            $siswa_nama_html .= '<tr><td>' . ($index + 1) . '. ' . htmlspecialchars($siswa) . '</td></tr>';
         }
-        $siswa_nama_html .= '</td></tr>';
     } else {
         $siswa_nama_html .= '<tr><td><strong>Sakit:</strong></td><td>-</td></tr>';
     }

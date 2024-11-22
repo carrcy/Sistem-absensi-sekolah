@@ -2,140 +2,61 @@
 require_once '../layout/_top.php';
 require_once '../helper/connection.php';
 
-if (!isset($_SESSION['login'])) {
-    header("Location: ../login.php");
-    exit;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-$result_absensi = mysqli_query($connection, "
-    SELECT 
-        a.tanggal, 
-        g.nama AS guru_nama, 
-        SUM(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN 1 ELSE 0 END) AS jumlah_tidak_hadir,
-        SUM(CASE WHEN a.status_kehadiran = 'Izin' THEN 1 ELSE 0 END) AS jumlah_izin,
-        SUM(CASE WHEN a.status_kehadiran = 'Sakit' THEN 1 ELSE 0 END) AS jumlah_sakit,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_tidak_hadir,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Izin' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_izin,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Sakit' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_sakit
-    FROM absensi a
-    JOIN siswa s ON a.siswa_id = s.id_siswa
-    JOIN guru g ON a.guru_id = g.id_guru
-    GROUP BY a.tanggal, g.nama
+// Ambil data dari kelas dan guru
+$result = mysqli_query($connection, "
+    SELECT kelas.id_kelas, kelas.nama_kelas, guru.nama 
+    FROM kelas 
+    LEFT JOIN guru ON kelas.guru_id = guru.id_guru
 ");
 
-if (!$result_absensi) {
-    die("Query Error: " . mysqli_error($connection));
+// Cek jika query gagal
+if (!$result) {
+    die("Query Failed: " . mysqli_error($connection));
 }
 ?>
 
-<style>
-    section {
-        color: black;
-    }
-
-    .table {
-        border: 0.5px solid gray;
-        width: 100%;
-    }
-
-    .table th, .table td {
-        border: 0.5px solid gray;
-        padding: 8px;
-    }
-
-    .table th {
-        background-color: #f2f2f2;
-    }
-
-    .table tbody td {
-        vertical-align: top;
-    }
-
-    .table ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        display: block;
-    }
-
-    @media (max-width: 768px) {
-        .table th, .table td {
-            font-size: 14px;
-            padding: 4px;
-        }
-
-        .table {
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-    }
-</style>
-
 <section class="section">
-    <div class="section-header text-center">
-        <h1>Laporan Absensi Siswa</h1>
+    <div class="section-header d-flex justify-content-between align-items-center">
+        <h1>Data Kelas</h1>
+        <!-- <a href="./create.php" class="btn btn-primary btn-lg">Tambah Data</a> -->
     </div>
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <br>
-                    <table class="table " id="table-1">
-                        <thead class="text-center">
-                        <tr>
-                            <th class="text-center border border-dark" style="width: 5%">No</th>
-                            <th class="border border-dark" style="width: 15%">Tanggal</th>
-                            <th class="border border-dark" style="width: 25%">Guru</th>
-                            <th class="text-center border border-dark" style="width: 10%">Tidak Hadir</th>
-                            <th class="text-center border border-dark" style="width: 5%">Izin</th>
-                            <th class="text-center border border-dark"style="width: 5%">Sakit</th>
-                            <th class="border border-dark" style="width: 30%">Nama Siswa (Tidak Hadir, Izin, Sakit)</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            $no = 1; 
-                            while ($absensi = mysqli_fetch_assoc($result_absensi)) : ?>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover w-100" id="table-1">
+                            <thead>
                                 <tr>
-                                    <td class="text-center"><?= $no++ ?></td>
-                                    <td><?= $absensi['tanggal'] ?></td>
-                                    <td><?= $absensi['guru_nama'] ?></td>
-                                    <td class="text-center"><?= $absensi['jumlah_tidak_hadir'] ?></td>
-                                    <td class="text-center"><?= $absensi['jumlah_izin'] ?></td>
-                                    <td class="text-center"><?= $absensi['jumlah_sakit'] ?></td>
-                                    <td class="p-2">
-                                        <?php 
-                                        $list_html = '';
-                                        if (!empty($absensi['siswa_tidak_hadir'])) {
-                                            $list_html .= '<strong>Tidak Hadir:</strong><ul>';
-                                            foreach (explode(', ', $absensi['siswa_tidak_hadir']) as $nama) {
-                                                $list_html .= '<li>' . htmlspecialchars($nama) . '</li>';
-                                            }
-                                            $list_html .= '</ul>';
-                                        }
-                                        if (!empty($absensi['siswa_izin'])) {
-                                            $list_html .= '<strong>Izin:</strong><ul>';
-                                            foreach (explode(', ', $absensi['siswa_izin']) as $nama) {
-                                                $list_html .= '<li>' . htmlspecialchars($nama) . '</li>';
-                                            }
-                                            $list_html .= '</ul>';
-                                        }
-                                        if (!empty($absensi['siswa_sakit'])) {
-                                            $list_html .= '<strong>Sakit:</strong><ul>';
-                                            foreach (explode(', ', $absensi['siswa_sakit']) as $nama) {
-                                                $list_html .= '<li>' . htmlspecialchars($nama) . '</li>';
-                                            }
-                                            $list_html .= '</ul>';
-                                        }
-
-                                        echo $list_html ?: 'Tidak ada data';
-                                        ?>
-                                    </td>
+                                    <th>No</th>
+                                    <th>Kode Kelas</th>
+                                    <th>Kelas</th>
+                                    <th>Wali Kelas</th>
+                                    <th style="width: 150px">Aksi</th>
                                 </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $no = 1;
+                                while ($data = mysqli_fetch_array($result)) :
+                                ?>
+                                    <tr>
+                                        <td><?= $no++ ?></td>
+                                        <td><?= htmlspecialchars($data['id_kelas']) ?></td>
+                                        <td><?= htmlspecialchars($data['nama_kelas']) ?></td>
+                                        <td><i class="fas fa-user-graduate m-2" style='font-size:14px'></i><?= htmlspecialchars($data['nama'] ?: 'Belum Ditentukan') ?></td>
+                                        <td>
+                                            <a href="detail.php?kelas_id=<?= htmlspecialchars($data['id_kelas']) ?>" class="btn btn-info btn-sm">Detail</a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -146,4 +67,91 @@ if (!$result_absensi) {
 require_once '../layout/_bottom.php';
 ?>
 
+<!-- Page Specific JS File -->
+<?php
+if (isset($_SESSION['info'])) :
+    if ($_SESSION['info']['status'] == 'success') {
+?>
+        <script>
+            iziToast.success({
+                title: 'Sukses',
+                message: `<?= htmlspecialchars($_SESSION['info']['message']) ?>`,
+                position: 'topCenter',
+                timeout: 5000
+            });
+        </script>
+    <?php
+    } else {
+    ?>
+        <script>
+            iziToast.error({
+                title: 'Gagal',
+                message: `<?= htmlspecialchars($_SESSION['info']['message']) ?>`,
+                timeout: 5000,
+                position: 'topCenter'
+            });
+        </script>
+<?php
+    }
+
+    unset($_SESSION['info']);
+endif;
+?>
+
 <script src="../assets/js/page/modules-datatables.js"></script>
+
+<!-- Styling Enhancement -->
+<style>
+    section {
+        color: #444;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .section-header h1 {
+        font-size: 28px;
+        color: #495057;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .table {
+        font-size: 14px;
+    }
+
+    .table th, .table td {
+        padding: 10px;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+    }
+
+    @media (max-width: 768px) {
+        .table th, .table td {
+            font-size: 12px;
+            padding: 8px;
+        }
+    }
+</style>

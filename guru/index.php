@@ -36,14 +36,14 @@ $result = mysqli_query($connection, "SELECT * FROM guru");
                   <tr>
                     <td><?= $no++ ?></td>
                     <td><?= $data['nip'] ?></td>
-                    <td><?= $data['nama'] ?></td>
+                    <td><i class="fas fa-user-graduate m-1" style='font-size:14px'></i><?= $data['nama'] ?></td>
                     <td><?= $data['alamat'] ?></td>
                     <td><?= $data['username_guru'] ?></td>
                     <td><?= $data['password_guru'] ?></td>
                     <td>
-                      <a class="btn btn-sm btn-danger mb-md-0 mb-1" href="delete.php?nip=<?= $data['nip'] ?>">
+                      <button class="btn btn-sm btn-danger mb-md-0 mb-1" onclick="confirmDelete('<?= $data['nip'] ?>')">
                         <i class="fas fa-trash fa-fw"></i>
-                      </a>
+                      </button>
                       <a class="btn btn-sm btn-info" href="edit.php?nip=<?= $data['nip'] ?>">
                         <i class="fas fa-edit fa-fw"></i>
                       </a>
@@ -95,4 +95,26 @@ if (isset($_SESSION['info'])) :
   $_SESSION['info'] = null;
 endif;
 ?>
+
+<!-- Tambahkan library SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/page/modules-datatables.js"></script>
+
+<script>
+  function confirmDelete(nip) {
+    Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Data ini akan dihapus secara permanen.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = `delete.php?nip=${nip}`;
+      }
+    });
+  }
+</script>

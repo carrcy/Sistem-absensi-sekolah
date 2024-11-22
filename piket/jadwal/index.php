@@ -2,22 +2,17 @@
 require_once '../layout/_top.php';
 require_once '../helper/connection.php';
 
-// Pastikan sesi sudah dimulai
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Cek apakah pengguna sudah login
 if (!isset($_SESSION['login'])) {
-    // Jika belum login, redirect ke halaman login
     header("Location: ../login.php");
     exit;
 }
 
-// Ambil ID guru dari sesi
 $id_guru = $_SESSION['login']['id_guru'];
 
-// Query untuk mengambil jadwal berdasarkan ID guru
 $result = mysqli_query($connection, "
     SELECT j.id_jadwal, j.hari, j.jam, j.mata_pelajaran, 
            k.nama_kelas, g.nama AS nama_guru 
@@ -33,7 +28,6 @@ while ($data = mysqli_fetch_array($result)) {
     $jadwal_harian[$data['hari']][] = $data;
 }
 
-// Tentukan urutan hari
 $urutan_hari = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
 
 // Urutkan jadwal berdasarkan hari
@@ -67,7 +61,7 @@ uksort($jadwal_harian, function($a, $b) use ($urutan_hari) {
               <tbody>
               <?php
                 if (count($jadwal_harian) > 0) {
-                  $no = 1; // Inisialisasi nomor urut di sini
+                  $no = 1; 
                   foreach ($jadwal_harian as $hari => $jadwals) {
                     ?>
                     <tr class="table bg-light fw-bold">
@@ -77,14 +71,13 @@ uksort($jadwal_harian, function($a, $b) use ($urutan_hari) {
                     foreach ($jadwals as $jadwal) :
                       ?>
                       <tr class="text-center">
-                        <td><?= $no++ ?></td> <!-- Gunakan $no di sini -->
+                        <td><?= $no++ ?></td> 
                         <td><?= $jadwal['jam'] ?></td>
                         <td><?= $jadwal['nama_kelas'] ?></td>
                         <td><?= $jadwal['mata_pelajaran'] ?></td>
-                        <td><?= $jadwal['nama_guru'] ?></td>
+                        <td><i class="fas fa-user-graduate m-2" style='font-size:14px'></i><?= $jadwal['nama_guru'] ?></td>
                         <td>
-                        <!-- Tombol Absen -->
-                        <a href="../absensi/laporan.php?jadwal_id=<?= $jadwal['id_jadwal'] ?>" class="btn btn-danger btn-sm">Rekap</a>
+                        <a href="laporan.php?jadwal_id=<?= $jadwal['id_jadwal'] ?>" class="btn btn-danger btn-sm">Rekap</a>
                       </td>
                       </tr>
                     <?php

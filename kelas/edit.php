@@ -15,15 +15,15 @@ $resultGuru = mysqli_query($connection, $queryGuru);
 
 <section class="section">
   <div class="section-header d-flex justify-content-between">
+    <a href="./index.php" class="btn btn-light text-center"><i class="fas fa-angle-double-left m-1 " style='font-size:14px'></i>Kembali</a>
     <h1>Ubah Data Kelas</h1>
-    <a href="./index.php" class="btn btn-light">Kembali</a>
   </div>
   <div class="row">
     <div class="col-12">
       <div class="card">
         <div class="card-body">
           <!-- Form untuk mengubah data kelas -->
-          <form action="./update.php" method="post">
+          <form action="./update.php" method="post" id="updateForm">
             <?php
             while ($row = mysqli_fetch_array($query)) {
             ?>
@@ -55,7 +55,7 @@ $resultGuru = mysqli_query($connection, $queryGuru);
                 </tr>
                 <tr>
                   <td>
-                    <input class="btn btn-primary d-inline" type="submit" name="proses" value="Ubah">
+                    <button type="button" class="btn btn-primary" onclick="confirmUpdate()">Ubah</button>
                     <a href="./index.php" class="btn btn-danger ml-1">Batal</a>
                   </td>
                 </tr>
@@ -71,3 +71,33 @@ $resultGuru = mysqli_query($connection, $queryGuru);
 <?php
 require_once '../layout/_bottom.php';
 ?>
+
+
+<!-- SweetAlert dan iziToast -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+
+<script>
+  function confirmUpdate() {
+    const form = document.getElementById('updateForm');
+    if (form.checkValidity()) {
+      Swal.fire({
+        title: 'Yakin ingin mengubah data?',
+        text: "Data akan diperbarui dengan informasi yang telah dimasukkan.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Ubah!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    } else {
+      form.reportValidity();
+    }
+  }
+</script>

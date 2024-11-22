@@ -1,6 +1,5 @@
 <?php
 require_once '../helper/auth.php';
-
 isLogin('guru');
 ?>
 

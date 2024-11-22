@@ -2,6 +2,6 @@
 $dbhost = "localhost";
 $dbusername = "root";
 $dbpassword = "";
-$dbname = "dbabsen";
+$dbname = "absensi";
 
 $connection = mysqli_connect($dbhost, $dbusername, $dbpassword,  $dbname);

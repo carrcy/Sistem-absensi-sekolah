@@ -44,15 +44,15 @@ $result = mysqli_query($connection, "
                   <tr>
                     <td><?= $no++ ?></td>
                     <td><?= $data['id_jadwal'] ?></td>
-                    <td><?= $data['hari'] ?></td>
-                    <td><?= $data['jam'] ?></td>
+                    <td><i class="far fa-calendar-check m-2" style='font-size:14px'></i><?= $data['hari'] ?></td>
+                    <td><i class="fas fa-clock m-2" style='font-size:14px'></i><?= $data['jam'] ?></td>
                     <td><?= $data['mata_pelajaran'] ?></td>
-                    <td><?= $data['nama_kelas'] ?></td> <!-- Menampilkan nama kelas -->
-                    <td><?= $data['nama_guru'] ?></td> <!-- Menampilkan nama guru -->
+                    <td><?= $data['nama_kelas'] ?></td> 
+                    <td><i class="fas fa-user-graduate m-2" style='font-size:14px'></i><?= $data['nama_guru'] ?></td>
                     <td>
-                      <a class="btn btn-sm btn-danger mb-md-0 mb-1" href="delete.php?id_jadwal=<?= $data['id_jadwal'] ?>">
+                      <button class="btn btn-sm btn-danger mb-md-0 mb-1" onclick="confirmDelete('<?= $data['id_jadwal'] ?>')">
                         <i class="fas fa-trash fa-fw"></i>
-                      </a>
+                      </button>
                       <a class="btn btn-sm btn-info" href="edit.php?id_jadwal=<?= $data['id_jadwal'] ?>">
                         <i class="fas fa-edit fa-fw"></i>
                       </a>
@@ -104,4 +104,26 @@ if (isset($_SESSION['info'])) :
   $_SESSION['info'] = null;
 endif;
 ?>
+
+<!-- Tambahkan library SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/page/modules-datatables.js"></script>
+
+<script>
+  function confirmDelete(id_jadwal) {
+    Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Data ini akan dihapus secara permanen.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Hapus!",
+      cancelButtonText: "Batal"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = `delete.php?id_jadwal=${id_jadwal}`;
+      }
+    });
+  }
+</script>

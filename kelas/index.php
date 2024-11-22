@@ -44,11 +44,11 @@ if (!$result) {
                     <td><?= $no++ ?></td>
                     <td><?= $data['id_kelas'] ?></td>
                     <td><?= $data['nama_kelas'] ?></td>
-                    <td><?= $data['nama'] ?></td>
+                    <td><i class="fas fa-user-graduate m-1" style='font-size:14px'></i><?= $data['nama'] ?></td>
                     <td>
-                      <a class="btn btn-sm btn-danger mb-md-0 mb-1" href="delete.php?id_kelas=<?= $data['id_kelas'] ?>">
+                      <button class="btn btn-sm btn-danger mb-md-0 mb-1" onclick="confirmDelete('<?= $data['id_kelas'] ?>')">
                         <i class="fas fa-trash fa-fw"></i>
-                      </a>
+                      </button>
                       <a class="btn btn-sm btn-info" href="edit.php?id_kelas=<?= $data['id_kelas'] ?>">
                         <i class="fas fa-edit fa-fw"></i>
                       </a>
@@ -83,7 +83,7 @@ if (isset($_SESSION['info'])) :
     </script>
   <?php
   } else {
-  ?>
+    ?>
     <script>
       iziToast.error({
         title: 'Gagal',
@@ -94,9 +94,32 @@ if (isset($_SESSION['info'])) :
     </script>
 <?php
   }
-
+  
   unset($_SESSION['info']);
   $_SESSION['info'] = null;
 endif;
 ?>
+
+<!-- Tambahkan library SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/page/modules-datatables.js"></script>
+
+<script>
+  function confirmDelete(id_kelas) {
+    Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Data ini akan dihapus secara permanen.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Hapus!",
+      cancelButtonText: "Batal"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = `delete.php?id_kelas=${id_kelas}`;
+      }
+    });
+  }
+</script>
+

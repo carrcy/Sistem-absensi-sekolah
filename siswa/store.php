@@ -7,9 +7,8 @@ $nama = $_POST['nama'];
 $kelas_id = $_POST['kelas_id'];
 $alamat = $_POST['alamat'];
 $tanggal_lahir = $_POST['tanggal_lahir'];
-$admin_id = $_POST['admin_id'];
 
-$query = mysqli_query($connection, "INSERT INTO siswa (nis, nama, kelas_id, alamat, tanggal_lahir, admin_id) VALUES ('$nis', '$nama', '$kelas_id','$alamat','$tanggal_lahir', '$admin_id')");
+$query = mysqli_query($connection, "INSERT INTO siswa (nis, nama, kelas_id, alamat, tanggal_lahir) VALUES ('$nis', '$nama', '$kelas_id','$alamat','$tanggal_lahir')");
 if ($query) {
   $_SESSION['info'] = [
     'status' => 'success',

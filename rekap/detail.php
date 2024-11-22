@@ -2,46 +2,45 @@
 require_once '../layout/_top.php';
 require_once '../helper/connection.php';
 
-// Start session if not started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Redirect to login page if session is not set
-if (!isset($_SESSION['login'])) {
-    header("Location: ../login.php");
+if (isset($_GET['kelas_id']) && is_numeric($_GET['kelas_id'])) {
+    $id_kelas = intval($_GET['kelas_id']); 
+} else {
+    echo "<script>alert('ID Kelas tidak ditemukan!'); window.location='index.php';</script>";
     exit;
 }
 
-// Get the ID of the logged-in teacher
-$id_guru = $_SESSION['login']['id_guru'];
-
-// Query to get the daily schedule data
-$result = mysqli_query($connection, "
+$query = "
     SELECT j.id_jadwal, j.hari, j.jam, j.mata_pelajaran, 
            k.nama_kelas, g.nama AS nama_guru 
     FROM jadwal j
     JOIN kelas k ON j.kelas_id = k.id_kelas
     JOIN guru g ON j.guru_id = g.id_guru
-    WHERE j.guru_id = '$id_guru'
+    WHERE j.kelas_id = ?
     ORDER BY j.hari, j.jam
-");
+";
 
-// Check if the query was successful
+$stmt = mysqli_prepare($connection, $query);
+if ($stmt === false) {
+    die("Error preparing the query: " . mysqli_error($connection));
+}
+
+mysqli_stmt_bind_param($stmt, 'i', $id_kelas);
+
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+
 if (!$result) {
     die("Query failed: " . mysqli_error($connection));
 }
 
-// Process the query result
 $jadwal_harian = [];
 while ($data = mysqli_fetch_array($result)) {
     $jadwal_harian[$data['hari']][] = $data;
 }
 
-// Define the order of days
 $urutan_hari = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
 
-// Sort the schedule array by day
 uksort($jadwal_harian, function($a, $b) use ($urutan_hari) {
     $pos_a = array_search($a, $urutan_hari);
     $pos_b = array_search($b, $urutan_hari);
@@ -81,21 +80,21 @@ uksort($jadwal_harian, function($a, $b) use ($urutan_hari) {
                     <?php
                     foreach ($jadwals as $jadwal) :
                       ?>
-                      <tr class="text-center">
+                      <tr>
                         <td><?= $no++ ?></td> 
                         <td><?= $jadwal['jam'] ?></td>
                         <td><?= $jadwal['nama_kelas'] ?></td>
                         <td><?= $jadwal['mata_pelajaran'] ?></td>
                         <td><i class="fas fa-user-graduate m-2" style='font-size:14px'></i><?= $jadwal['nama_guru'] ?></td>
                         <td>
-                            <a href="form.php?jadwal_id=<?= $jadwal['id_jadwal'] ?>" class="btn btn-primary btn-sm">Absen</a>
+                            <a href="rekap.php?jadwal_id=<?= $jadwal['id_jadwal'] ?>" class="btn btn-danger btn-sm">Rekap</a>
                         </td>
                       </tr>
                     <?php
                     endforeach;
                   }
                 } else {
-                  echo "<tr><td colspan='6' class='text-center text-muted'>Tidak ada data absensi untuk guru ini.</td></tr>";
+                  echo "<tr><td colspan='6' class='text-center text-muted'>Tidak ada data absensi untuk kelas ini.</td></tr>";
                 }
               ?>
               </tbody>
@@ -112,7 +111,6 @@ require_once '../layout/_bottom.php';
 
 <!-- Page Specific JS File -->
 <?php
-// Display toast notifications if there is session info
 if (isset($_SESSION['info'])) :
   if ($_SESSION['info']['status'] == 'success') {
 ?>
@@ -138,11 +136,9 @@ if (isset($_SESSION['info'])) :
 <?php
   }
 
-  // Clear session info after displaying the toast
   unset($_SESSION['info']);
   $_SESSION['info'] = null;
 endif;
 ?>
 
-<!-- Include DataTables JS -->
 <script src="../../assets/js/page/modules-datatables.js"></script>

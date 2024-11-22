@@ -44,19 +44,19 @@
         </ul>
       </li>
       <li class="dropdown">
+        <a href="#" class="navsid nav-link has-dropdown text-white" data-toggle="dropdown"><i class="fas fa-columns " style='font-size:19px'></i> <span>Kelas</span></a>
+        <ul class="dropdown-menu">
+          <li><a class="nav-link" href="../kelas/index.php">List</a></li>
+          <li><a class="nav-link" href="../kelas/create.php">Tambah Kelas</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
         <a href="#" class="navsid nav-link has-dropdown text-white" data-toggle="dropdown"><i class="fas fa-users " style='font-size:19px'></i>
           <span>Siswa</span></a>
         <ul class="dropdown-menu">
           <li><a class="nav-link" href="../siswa/index.php">Data Siswa</a></li>
           <li><a class="nav-link" href="../siswa/create.php">Tambah Siswa</a></li>
         </ul> 
-      </li>
-      <li class="dropdown">
-        <a href="#" class="navsid nav-link has-dropdown text-white" data-toggle="dropdown"><i class="fas fa-columns " style='font-size:19px'></i> <span>Kelas</span></a>
-        <ul class="dropdown-menu">
-          <li><a class="nav-link" href="../kelas/index.php">List</a></li>
-          <li><a class="nav-link" href="../kelas/create.php">Tambah Kelas</a></li>
-        </ul>
       </li>
       <li class="dropdown">
         <a href="#" class="navsid nav-link has-dropdown text-white" data-toggle="dropdown"><i class='far fa-calendar-alt' style='font-size:19px'></i>

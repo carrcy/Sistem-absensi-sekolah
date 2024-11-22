@@ -62,34 +62,7 @@ foreach ($status_kehadiran as $siswa_id => $status) {
 }
 
 // Jika semua data absensi berhasil disimpan, lanjutkan ke laporan_absensi
-if ($all_absensi_success) {
-    $query_laporan = "INSERT INTO laporan_absensi (total_hadir, total_tidak_hadir, total_izin, total_sakit, guru_id) VALUES (?, ?, ?, ?, ?)";
-    $stmt_laporan = mysqli_prepare($connection, $query_laporan);
 
-    if ($stmt_laporan) {
-        mysqli_stmt_bind_param($stmt_laporan, 'iiiii', $total_hadir, $total_tidak_hadir, $total_izin, $total_sakit, $guru_id);
-        $result_laporan = mysqli_stmt_execute($stmt_laporan);
-
-        if ($result_laporan) {
-            $_SESSION['info'] = [
-                'status' => 'success',
-                'message' => 'Berhasil Absensi '
-            ];
-        } else {
-            $_SESSION['info'] = [
-                'status' => 'failed',
-                'message' => 'Gagal menyimpan laporan absensi: ' . mysqli_stmt_error($stmt_laporan)
-            ];
-        }
-
-        mysqli_stmt_close($stmt_laporan);
-    } else {
-        $_SESSION['info'] = [
-            'status' => 'failed',
-            'message' => 'Persiapan query laporan gagal: ' . mysqli_error($connection)
-        ];
-    }
-}
 
 header('Location: index.php');
 exit;

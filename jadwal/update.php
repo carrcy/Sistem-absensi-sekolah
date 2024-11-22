@@ -7,7 +7,7 @@ $hari = $_POST['hari'];
 $jam = $_POST['jam'];
 $mata_pelajaran = $_POST['mata_pelajaran'];
 
-$query = mysqli_query($connection, "UPDATE matakuliah SET hari = '$hari', jam = '$jam', mata_pelajaran = '$mata_pelajaran' WHERE id_jadwal = '$id_jadwal'");
+$query = mysqli_query($connection, "UPDATE jadwal SET hari = '$hari', jam = '$jam', mata_pelajaran = '$mata_pelajaran' WHERE id_jadwal = '$id_jadwal'");
 if ($query) {
   $_SESSION['info'] = [
     'status' => 'success',

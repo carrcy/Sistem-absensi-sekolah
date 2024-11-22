@@ -12,7 +12,7 @@ require_once '../helper/connection.php';
 // Ambil jadwal_id dari parameter GET
 $jadwal_id = isset($_GET['jadwal_id']) ? intval($_GET['jadwal_id']) : 0;
 
-// Query untuk mendapatkan semua nama siswa berdasarkan status kehadiran, diurutkan berdasarkan id_siswa
+// Query untuk mendapatkan semua NIS dan nama siswa berdasarkan status kehadiran, diurutkan berdasarkan id_siswa
 $result_absensi = mysqli_query($connection, "
     SELECT 
         a.tanggal, 
@@ -20,9 +20,9 @@ $result_absensi = mysqli_query($connection, "
         SUM(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN 1 ELSE 0 END) AS jumlah_tidak_hadir,
         SUM(CASE WHEN a.status_kehadiran = 'Izin' THEN 1 ELSE 0 END) AS jumlah_izin,
         SUM(CASE WHEN a.status_kehadiran = 'Sakit' THEN 1 ELSE 0 END) AS jumlah_sakit,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_tidak_hadir,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Izin' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_izin,
-        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Sakit' THEN s.nama END ORDER BY s.id_siswa ASC SEPARATOR ', ') AS siswa_sakit
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Tidak Hadir' THEN CONCAT(s.nis, ': ', s.nama) END ORDER BY s.id_siswa ASC SEPARATOR '<br>') AS siswa_tidak_hadir,
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Izin' THEN CONCAT(s.nis, ': ', s.nama) END ORDER BY s.id_siswa ASC SEPARATOR '<br>') AS siswa_izin,
+        GROUP_CONCAT(CASE WHEN a.status_kehadiran = 'Sakit' THEN CONCAT(s.nis, ': ', s.nama) END ORDER BY s.id_siswa ASC SEPARATOR '<br>') AS siswa_sakit
     FROM absensi a
     JOIN siswa s ON a.siswa_id = s.id_siswa
     JOIN guru g ON a.guru_id = g.id_guru
@@ -81,14 +81,15 @@ if (!$result_absensi) {
 </style>
 
 <section class="section">
-    <div class="section-header text-center">
+    <div class="section-header d-flex justify-content-between">
+        <a href="./index.php" class="btn btn-light text-center"><i class="fas fa-angle-double-left m-1 " style='font-size:14px'></i>Kembali</a>
         <h1>Laporan Absensi Siswa</h1>
     </div>
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <a href="cetak_absensi.php?jadwal_id=<?= $jadwal_id ?>" target="_blank" class="btn btn-primary">Cetak PDF</a>
+                    <a href="cetak_absensi.php?jadwal_id=<?= $jadwal_id ?>" target="_blank" class="btn btn-danger">Cetak PDF</a>
                     <br>
                     <br>
                     <table class="table" id="table-1">
@@ -105,8 +106,47 @@ if (!$result_absensi) {
                         </thead>
                         <tbody>
                             <?php 
-                            $no = 1; // Inisialisasi nomor urut
-                            while ($absensi = mysqli_fetch_assoc($result_absensi)) : ?>
+                            $no = 1; // Inisialisasi nomor urut untuk tabel
+                            while ($absensi = mysqli_fetch_assoc($result_absensi)) : 
+                                // Proses penambahan nomor urut pada setiap kategori
+                                $siswa_tidak_hadir = explode('<br>', $absensi['siswa_tidak_hadir']);
+                                $siswa_izin = explode('<br>', $absensi['siswa_izin']);
+                                $siswa_sakit = explode('<br>', $absensi['siswa_sakit']);
+                                
+                                // Nomor urut untuk kategori
+                                $no_tidak_hadir = 1;
+                                $no_izin = 1;
+                                $no_sakit = 1;
+
+                                $list_html = '';
+                                
+                                // Menampilkan Tidak Hadir
+                                if (count($siswa_tidak_hadir) > 0) {
+                                    $list_html .= '<strong>Tidak Hadir:</strong><br>';
+                                    foreach ($siswa_tidak_hadir as $siswa) {
+                                        $list_html .= $no_tidak_hadir . '. ' . $siswa . '<br>';
+                                        $no_tidak_hadir++;
+                                    }
+                                }
+
+                                // Menampilkan Izin
+                                if (count($siswa_izin) > 0) {
+                                    $list_html .= '<br><strong>Izin:</strong><br>';
+                                    foreach ($siswa_izin as $siswa) {
+                                        $list_html .= $no_izin . '. ' . $siswa . '<br>';
+                                        $no_izin++;
+                                    }
+                                }
+
+                                // Menampilkan Sakit
+                                if (count($siswa_sakit) > 0) {
+                                    $list_html .= '<br><strong>Sakit:</strong><br>';
+                                    foreach ($siswa_sakit as $siswa) {
+                                        $list_html .= $no_sakit . '. ' . $siswa . '<br>';
+                                        $no_sakit++;
+                                    }
+                                }
+                            ?>
                                 <tr>
                                     <td class="text-center"><?= $no++ ?></td>
                                     <td><?= $absensi['tanggal'] ?></td>
@@ -115,32 +155,7 @@ if (!$result_absensi) {
                                     <td class="text-center"><?= $absensi['jumlah_izin'] ?></td>
                                     <td class="text-center"><?= $absensi['jumlah_sakit'] ?></td>
                                     <td class="p-2">
-                                        <?php 
-                                        $list_html = '';
-                                        if (!empty($absensi['siswa_tidak_hadir'])) {
-                                            $list_html .= '<strong>Tidak Hadir:</strong><ul>';
-                                            foreach (explode(', ', $absensi['siswa_tidak_hadir']) as $nama) {
-                                                $list_html .= '<li>' . htmlspecialchars($nama) . '</li>';
-                                            }
-                                            $list_html .= '</ul>';
-                                        }
-                                        if (!empty($absensi['siswa_izin'])) {
-                                            $list_html .= '<strong>Izin:</strong><ul>';
-                                            foreach (explode(', ', $absensi['siswa_izin']) as $nama) {
-                                                $list_html .= '<li>' . htmlspecialchars($nama) . '</li>';
-                                            }
-                                            $list_html .= '</ul>';
-                                        }
-                                        if (!empty($absensi['siswa_sakit'])) {
-                                            $list_html .= '<strong>Sakit:</strong><ul>';
-                                            foreach (explode(', ', $absensi['siswa_sakit']) as $nama) {
-                                                $list_html .= '<li>' . htmlspecialchars($nama) . '</li>';
-                                            }
-                                            $list_html .= '</ul>';
-                                        }
-
-                                        echo $list_html ?: 'Tidak ada data';
-                                        ?>
+                                        <?= $list_html ?: 'Tidak ada data'; ?>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>

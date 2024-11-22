@@ -16,7 +16,7 @@ if (isset($_POST['submit'])) {
   $admin_result = mysqli_query($connection, $admin_query);
 
   if ($guru_result->num_rows > 0) {
-    // Memeriksa password guru
+    // Memeriksa password 
     $guru = $guru_result->fetch_assoc();
     if ($password == $guru['password_guru']) {
         $_SESSION['login'] = $guru;
@@ -27,7 +27,6 @@ if (isset($_POST['submit'])) {
         $error = "Password salah";
     }
   } elseif (mysqli_num_rows($admin_result) === 1) {
-    // Memeriksa admin umum
     $admin = mysqli_fetch_assoc($admin_result);
     if ($password == $admin['password_admin']) {
         $_SESSION['login'] = $admin;

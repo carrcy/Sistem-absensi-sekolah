@@ -111,14 +111,15 @@ if ($jadwal_detail = mysqli_fetch_assoc($jadwal_result)) {
 </style>
 
 <section class="section">
-    <div class="section-header text-center">
+    <div class="section-header d-flex justify-content-between">
+        <a href="./index.php" class="btn btn-light text-center"><i class="fas fa-angle-double-left m-1 " style='font-size:14px'></i>Kembali</a>
         <h1>Form Absensi Siswa</h1>
     </div>
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <form method="POST" action="store.php" class="g-4">
+                    <form method="POST" action="store.php" class="g-4" id="formAbsensi">
                         <input type="hidden" name="jadwal_id" value="<?= $jadwal_id ?>">
                         <div class="form-group w-75 m-auto">
                             <label for="tanggal">Tanggal</label>
@@ -149,22 +150,58 @@ if ($jadwal_detail = mysqli_fetch_assoc($jadwal_result)) {
                                         <tr>
                                             <td><?= $no++ ?></td>
                                             <td><?= $siswa['nama'] ?></td>
-                                            <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Hadir"></td>
-                                            <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Tidak Hadir"></td>
-                                            <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Izin"></td>
-                                            <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Sakit"></td>
+                                            <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Hadir" required></td>
+                                            <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Tidak Hadir" required></td>
+                                            <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Izin" required></td>
+                                            <td class="text-center"><input type="radio" name="status[<?= $siswa['id_siswa'] ?>]" value="Sakit" required></td>
                                         </tr>
                                     <?php endwhile; ?>
                                 </tbody>
                             </table>
                         </div>
-                        <button type="submit" class="btn btn-primary end">Submit</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Tambahkan library SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById("formAbsensi").addEventListener("submit", function (e) {
+        e.preventDefault(); // Mencegah pengiriman form langsung
+        Swal.fire({
+            title: "Apakah Anda yakin?",
+            text: "Sudah Benar Melakukan Absensi Siswa!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Simpan",
+            cancelButtonText: "Batal",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                e.target.submit();
+            }
+        });
+    });
+</script>
+
+<style>
+  /* Tambahkan gaya khusus untuk SweetAlert */
+  .swal2-title-custom {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #333;
+  }
+  .swal2-popup-custom {
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  }
+</style>
 
 <?php
 require_once '../layout/_bottom.php';

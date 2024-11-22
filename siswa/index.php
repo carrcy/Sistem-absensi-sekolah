@@ -29,7 +29,7 @@ $result = mysqli_query($connection, "
                   <th>Kelas</th>
                   <th>Alamat</th>
                   <th>Tanggal Lahir</th>
-                  <th style="width: 150">Aksi</th>
+                  <th style="width: 200">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -41,14 +41,22 @@ $result = mysqli_query($connection, "
                   <tr>
                     <td><?= $no++ ?></td> <!-- Menampilkan nomor urut -->
                     <td><?= $data['nis'] ?></td>
-                    <td><?= $data['nama'] ?></td>
-                    <td><?= $data['nama_kelas'] ?></td> <!-- Tampilkan Nama Kelas -->
+                    <td><i class="fas fa-users m-1" style='font-size:14px'></i><?= $data['nama'] ?></td>
+                    <td><?= $data['nama_kelas'] ?></td> 
                     <td><?= $data['alamat'] ?></td>
                     <td><?= $data['tanggal_lahir'] ?></td>
-                    <td>
-                      <a class="btn btn-sm btn-danger mb-md-0 mb-1" href="delete.php?nis=<?= $data['nis'] ?>">
+                    <!-- <td>
+                      <button class="btn btn-sm btn-danger mb-md-0 mb-1" onclick="confirmDelete('<?= $data['nis'] ?>')">
                         <i class="fas fa-trash fa-fw"></i>
+                      </button>
+                      <a class="btn btn-sm btn-info" href="edit.php?nis=<?= $data['nis'] ?>">
+                        <i class="fas fa-edit fa-fw"></i>
                       </a>
+                    </td> -->
+                    <td>
+                      <button class="btn btn-sm btn-danger mb-md-0 mb-1" onclick="confirmDelete('<?= $data['nis'] ?>')">
+                        <i class="fas fa-trash fa-fw"></i>
+                      </button>
                       <a class="btn btn-sm btn-info" href="edit.php?nis=<?= $data['nis'] ?>">
                         <i class="fas fa-edit fa-fw"></i>
                       </a>
@@ -100,4 +108,27 @@ if (isset($_SESSION['info'])) :
   $_SESSION['info'] = null;
 endif;
 ?>
+
+
+<!-- Tambahkan library SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/page/modules-datatables.js"></script>
+
+<script>
+  function confirmDelete(nis) {
+    Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Data ini akan dihapus secara permanen.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Hapus!",
+      cancelButtonText: "Batal"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = `delete.php?nis=${nis}`;
+      }
+    });
+  }
+</script>
